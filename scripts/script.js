@@ -39,6 +39,31 @@ function removeVideoStream (evt) {
 
 document.getElementById("start").onclick = function () {
 
-    //Code here
-
+    Let client=AgoraRTC.create({
+		mode:'rtc';
+		codec:'h264'
+	});
+	
+	let appid=document.getElementById('app-id').value;
+	client.init(appid,function(){
+		client.join(null,'any channel',null,function(uid){
+			//Created a client and joined a channel
+			let localStream =AgoraRTC.create({
+				video:true,
+				audio:false,
+			});
+		    localStream.init(function(){
+                localStream.play('me');
+				client.publish(localStream);
+			});		 
+		},handleFail);
+		client.on('sream-added',function(evt){
+			client.subscribe(evt.stream,handleFail);
+		});
+		client.on('stream-subscribed',function(evt){
+			let strem=evt.stream;
+			addVideoStream(stream.getId);
+			stream.play(String(stream.getId));
+		});
+	},handleFail);
 };
